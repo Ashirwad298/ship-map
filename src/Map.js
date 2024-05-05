@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState} from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
 import { portsDataGeoJson } from "./ports";
@@ -25,6 +25,8 @@ function getRandomColor() {
 }
 const Map = () => {
   const mapContainerRef = useRef(null);
+  const [selectedDate, setSelectedDate] = useState("2024-05-01"); // Default to 1st May 2024
+
 
   // Initialize map when component mounts
   useEffect(() => {
@@ -32,7 +34,7 @@ const Map = () => {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/outdoors-v12",
       center: [-87.65, 41.84],
-      zoom: 10,
+      zoom: 3,
     });
 
     map.on("load", function () {
@@ -72,7 +74,7 @@ const Map = () => {
           shipNames.forEach((shipName) => {
             map.addSource(shipName, {
               type: "geojson",
-              data: getParticularShipGeoData(shipName)
+              data: getParticularShipGeoData(shipName, selectedDate)
             })
             map.addLayer({
               id: `${shipName}_line`,
@@ -141,9 +143,35 @@ const Map = () => {
 
     // Clean up on unmount
     return () => map.remove();
-  }, []);
+  }, [selectedDate]);
 
-  return <div className="map-container" ref={mapContainerRef} />;
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  return (
+    <div>
+
+    <div>
+      <label htmlFor="date-select">Select Date: </label>
+      <select id="date-select" value={selectedDate} onChange={handleDateChange}>
+        <option value="2024-04-27">27th April 2024</option>
+        <option value="2024-04-28">28th April 2024</option>
+        <option value="2024-04-29">29th April 2024</option>
+        <option value="2024-04-30">30th April 2024</option>
+        <option value="2024-05-01">1st May 2024</option>
+        <option value="2024-05-01">1st May 2024</option>
+        <option value="2024-05-02">2nd May 2024</option>
+        <option value="2024-05-03">3rd May 2024</option>
+        <option value="2024-05-04">4th May 2024</option>
+        <option value="2024-05-05">5th May 2024</option>
+      </select>
+    </div>
+      
+      <div className="map-container" ref={mapContainerRef} />
+
+    </div>
+  )
 };
 
 export default Map;
