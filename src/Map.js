@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
-import geoJson from "./chicago-parks.json";
 import { portsDataGeoJson } from "./ports";
+import { getParticularShipGeoData } from "./shipsArray";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYXNodXRob3IzMjEiLCJhIjoiY2x2c2l5cDhyMTBvNTJpcGFoZ3Z1NjdvZiJ9.i6zckAg_jgKGt1o4wzauRw";
@@ -34,7 +34,9 @@ const Map = () => {
               features: portsDataGeoJson,
             },
           });
-          // Add a symbol layer
+
+          // layer for port markers
+
           map.addLayer({
             id: "points",
             type: "symbol",
@@ -48,6 +50,46 @@ const Map = () => {
               "text-anchor": "top",
             },
           });
+
+          /* Here Source  for ships , then line layer for ships then symbol for ship name is added */
+
+          map.addSource("ships", {
+            type: "geojson",
+            data: getParticularShipGeoData("ship_9")
+          })
+          console.log(getParticularShipGeoData("ship_9"));
+          map.addLayer({
+            id: "ships",
+            type: "line",
+            source: "ships",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              'line-color': '#888',
+              'line-width': 8
+            }
+          });
+
+          map.addLayer({
+            id: "ship-labels",
+            type: "symbol",
+            source: "ships",
+            layout: {
+                "text-field": ["get", "title"], // Get the ship name from the "title" property
+                "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+                "text-size": 12,
+                "text-offset": [0, 0.5], // Offset to position the label above the line
+                "text-anchor": "top"
+            },
+            paint: {
+                "text-color": "#000" // Color of the text labels
+            }
+        });
+
+
+          
         }
       );
     });
