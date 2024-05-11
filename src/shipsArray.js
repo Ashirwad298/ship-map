@@ -13,7 +13,6 @@ export const getShipNames = () => {
     uniqueShipNames.add(site_name);
   })
   const shipNames = [...uniqueShipNames];
-  console.log(shipNames);
   return shipNames;
 }
 export const getParticularShipGeoData = (shipName, date) => {
