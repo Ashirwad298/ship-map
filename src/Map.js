@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState} from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
 import { portsDataGeoJson } from "./ports";
-import { getParticularShipGeoData, getShipNames } from "./shipsArray";
+import { getLatestLocationOfShips, getParticularShipGeoData, getShipNames, getShipNamesPassedThroughPort } from "./shipsArray";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYXNodXRob3IzMjEiLCJhIjoiY2x2c2l5cDhyMTBvNTJpcGFoZ3Z1NjdvZiJ9.i6zckAg_jgKGt1o4wzauRw";
@@ -25,7 +25,7 @@ function getRandomColor() {
 }
 const Map = () => {
   const mapContainerRef = useRef(null);
-  const [selectedDate, setSelectedDate] = useState("2024-05-01"); // Default to 1st May 2024
+  const [selectedDate, setSelectedDate] = useState("2024-05-03"); // Default to 3rd May 2024
 
 
   // Initialize map when component mounts
@@ -45,7 +45,7 @@ const Map = () => {
           if (error) throw error;
           map.addImage("custom-marker", image);
           // Add a GeoJSON source with multiple points
-          map.addSource("points", {
+          map.addSource("ports", {
             type: "geojson",
             data: {
               type: "FeatureCollection",
@@ -56,9 +56,9 @@ const Map = () => {
           // layer for port markers
 
           map.addLayer({
-            id: "points",
+            id: "ports",
             type: "symbol",
-            source: "points",
+            source: "ports",
             layout: {
               "icon-image": "custom-marker",
               // get the title name from the source's "title" property
@@ -69,7 +69,18 @@ const Map = () => {
             },
           });
 
-          /* Here Source  for ships , then line layer for ships then symbol for ship name is added */
+          // TO show names of the ships that have passed through this port. 
+          map.on('mouseenter', 'ports', (e) => {
+            console.log(e);
+            const shipNames = getShipNamesPassedThroughPort(e.features[0].properties);
+            console.log(e.features[0].properties);
+            console.log(shipNames);
+            // TODO - instead of doing console.log - show these names in a sidebar component.
+
+          });
+
+          // /* Here Source  for ships , then line layer for ships then symbol for ship name is added */
+          //TODO - give a select option to user, which if he enables then only ship lines are shown.
           const shipNames = getShipNames();
           shipNames.forEach((shipName) => {
             map.addSource(shipName, {
@@ -127,7 +138,8 @@ const Map = () => {
 
           })
 
-          // for curson events
+          
+
 
 
 
@@ -136,6 +148,45 @@ const Map = () => {
           
         }
       );
+      
+      // To add latestLocationOfShips source
+      map.addSource('latestLocationOfShips', {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: getLatestLocationOfShips(), 
+        }
+        
+      })
+      
+      // To add shipName Text Layer
+      map.addLayer({
+        id: "ships",
+        type: "symbol",
+        source: "latestLocationOfShips",
+        layout: {
+          // get the title name from the source's "title" property
+          "icon-image": "ship-marker",
+          "text-field": ["get", "title"],
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-offset": [0, 1.25],
+          "text-anchor": "top",
+        },
+      })
+
+      // TO add ship-marker icon layer
+      const shipGeoJson = getLatestLocationOfShips();
+      shipGeoJson.forEach(({ geometry }) => {
+        const markerElement = document.createElement('div');
+        markerElement.className = 'marker';
+        new mapboxgl.Marker(markerElement)
+          .setLngLat(geometry.coordinates)
+          .addTo(map);
+      })
+
+
+
+
     });
 
     // Add navigation control (the +/- zoom buttons)
@@ -149,6 +200,8 @@ const Map = () => {
     setSelectedDate(event.target.value);
   };
 
+  //TODO - Make a seperate componet for Select Date
+
   return (
     <div>
 
@@ -160,11 +213,8 @@ const Map = () => {
         <option value="2024-04-29">29th April 2024</option>
         <option value="2024-04-30">30th April 2024</option>
         <option value="2024-05-01">1st May 2024</option>
-        <option value="2024-05-01">1st May 2024</option>
         <option value="2024-05-02">2nd May 2024</option>
         <option value="2024-05-03">3rd May 2024</option>
-        <option value="2024-05-04">4th May 2024</option>
-        <option value="2024-05-05">5th May 2024</option>
       </select>
     </div>
       

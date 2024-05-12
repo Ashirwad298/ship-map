@@ -12375,7 +12375,10 @@ export const portsDataGeoJson = arr.map( ( { port_name, latitude, longitude } ) 
   return {
     type: "Feature",
     properties: {
-      title: port_name
+      title: port_name,
+      latitude,
+      longitude
+
     },
     geometry: {
       coordinates: [longitude, latitude],
