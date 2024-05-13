@@ -19,11 +19,13 @@
   display: inline-block;
   position: absolute;
   top: 0;
-  left: 0;
-  margin: 12px;
+  right: 0;
+  margin: 16px;
+  margin-right: 40px;
   background-color: #404040;
-  color: #ffffff;
+  color: red;
   z-index: 1 !important;
   padding: 6px;
   font-weight: bold;
+  
 }

@@ -45,7 +45,7 @@ export const getShipNamesPassedThroughPort = (portData) => {
   shipData.forEach(({ site_name: shipName, location_longitude, location_latitude, heading, ec_timestamp }) => {
     const latitude_diff = Math.abs(location_latitude - port_latitude);
     const longitude_diff = Math.abs(location_longitude - port_longitude);
-    const precision = 1;
+    const precision = 2;
     if (latitude_diff <= precision && longitude_diff <= precision)
       uniqueShips.add(shipName);
   })

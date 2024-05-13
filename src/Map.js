@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState} from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
 import { portsDataGeoJson } from "./ports";
+import { SidePanel } from "./components/SidePanel";
 import { getLatestLocationOfShips, getParticularShipGeoData, getShipNames, getShipNamesPassedThroughPort } from "./shipsArray";
 
 mapboxgl.accessToken =
@@ -26,6 +27,9 @@ function getRandomColor() {
 const Map = () => {
   const mapContainerRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState("2024-05-03"); // Default to 3rd May 2024
+  const [showSidePanel, setShowSidePanel] = useState(false);
+  const [shipsPassed, setShipsPassed] = useState([]);
+  const [portClicked, setPortClicked] = useState(null);
 
 
   // Initialize map when component mounts
@@ -71,12 +75,9 @@ const Map = () => {
 
           // TO show names of the ships that have passed through this port. 
           map.on('mouseenter', 'ports', (e) => {
-            console.log(e);
-            const shipNames = getShipNamesPassedThroughPort(e.features[0].properties);
-            console.log(e.features[0].properties);
-            console.log(shipNames);
-            // TODO - instead of doing console.log - show these names in a sidebar component.
-
+            setShipsPassed(getShipNamesPassedThroughPort(e.features[0].properties));
+            setPortClicked(e.features[0].properties);
+            setShowSidePanel(true);
           });
 
           // /* Here Source  for ships , then line layer for ships then symbol for ship name is added */
@@ -205,18 +206,26 @@ const Map = () => {
   return (
     <div>
 
-    <div>
-      <label htmlFor="date-select">Select Date: </label>
-      <select id="date-select" value={selectedDate} onChange={handleDateChange}>
-        <option value="2024-04-27">27th April 2024</option>
-        <option value="2024-04-28">28th April 2024</option>
-        <option value="2024-04-29">29th April 2024</option>
-        <option value="2024-04-30">30th April 2024</option>
-        <option value="2024-05-01">1st May 2024</option>
-        <option value="2024-05-02">2nd May 2024</option>
-        <option value="2024-05-03">3rd May 2024</option>
-      </select>
-    </div>
+      <div>
+        <label htmlFor="date-select">Select Date: </label>
+        <select id="date-select" value={selectedDate} onChange={handleDateChange}>
+          <option value="2024-04-27">27th April 2024</option>
+          <option value="2024-04-28">28th April 2024</option>
+          <option value="2024-04-29">29th April 2024</option>
+          <option value="2024-04-30">30th April 2024</option>
+          <option value="2024-05-01">1st May 2024</option>
+          <option value="2024-05-02">2nd May 2024</option>
+          <option value="2024-05-03">3rd May 2024</option>
+        </select>
+      </div>
+
+      {
+        showSidePanel &&
+        <SidePanel
+          shipsPassed={shipsPassed}
+          portClicked={portClicked}
+        />
+      }
       
       <div className="map-container" ref={mapContainerRef} />
 
