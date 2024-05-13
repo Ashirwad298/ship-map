@@ -1,5 +1,4 @@
 {
-  "homepage": "http://Ashirwad298.github.io/ship-map",
   "name": "markers-symbol",
   "version": "0.1.0",
   "dependencies": {
@@ -9,12 +8,7 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "build": "react-scripts build",
-    "build:prod": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng build --configuration=production",
-    "ng": "node --max_old_space_size=4096 ./node_modules/.bin/ng"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
